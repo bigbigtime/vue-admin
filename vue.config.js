@@ -54,6 +54,15 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,
     proxy: null, // 设置代理
+    proxy: {
+      '/devApi': {
+          target: "http://www.web-jshtml.cn/productapi", //API服务器的地址  http://www.web-jshtml.cn/api
+          changeOrigin: true,
+          pathRewrite: {
+              '^/devApi': ''
+          }
+      }
+    },
     overlay: { // 全屏模式下是否显示脚本错误
       warnings: true,
       errors: true
