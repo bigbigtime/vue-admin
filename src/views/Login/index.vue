@@ -247,6 +247,10 @@ export default {
         Login(repuestData).then(response => {
           console.log('登录成功')
           console.log(response)
+          // 页面跳转
+          root.$router.push({
+            name: 'Console'
+          })
         }).catch(error => {})
       })
       /**

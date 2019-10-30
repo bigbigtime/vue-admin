@@ -33,7 +33,6 @@ module.exports = {
         sass: { 
             data: `@import "./src/styles/main.scss";`
         }
-            
     },
     // 启用 CSS modules for all css / pre-processor files.
     modules: false
