@@ -6,6 +6,7 @@
           {{ item.txt }}
         </li>
       </ul>
+      <svg-icon icon-name="menu" class-name="menu"></svg-icon>
       <!--表单 start-->
       <el-form :model="ruleForm" status-icon :rules="rules" ref="loginForm" class="login-form" size="medium">
         <el-form-item prop="username" class="item-from">
@@ -244,14 +245,14 @@ export default {
           password: sha1(ruleForm.password),
           code: ruleForm.code
         }
-        Login(repuestData).then(response => {
+        root.$store.dispatch('login', repuestData).then(response => {
           console.log('登录成功')
           console.log(response)
           // 页面跳转
           root.$router.push({
             name: 'Console'
           })
-        }).catch(error => {})
+        }).catch(error => {});
       })
       /**
        * 注册

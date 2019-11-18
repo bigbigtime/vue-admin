@@ -1,9 +1,12 @@
 <template>
-    <div>控制台首页</div>
+    <div>信息列表</div>
 </template>
 <script>
 export default {
-    
+    name: 'infoIndex',
+    setup(props) {
+        
+    }
 }
 </script>
 <style lang="scss" scoped>
