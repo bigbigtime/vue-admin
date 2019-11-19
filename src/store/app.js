@@ -1,4 +1,3 @@
-
 const app = {
     state: {
         isCollapse: JSON.parse(sessionStorage.getItem('isCollapse')) || false
