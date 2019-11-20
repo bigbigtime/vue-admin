@@ -245,7 +245,7 @@ export default {
           password: sha1(ruleForm.password),
           code: ruleForm.code
         }
-        root.$store.dispatch('login', repuestData).then(response => {
+        root.$store.dispatch('app/login', repuestData).then(response => {
           console.log('登录成功')
           console.log(response)
           // 页面跳转
