@@ -1,5 +1,5 @@
 import { Login } from "@/api/login";
-import { setToKen, setUserName, getUserName } from "@/utils/app";
+import { setToKen, removeToKen, removeUserName, setUserName, getUserName } from "@/utils/app";
 const state = {
     isCollapse: JSON.parse(sessionStorage.getItem('isCollapse')) || false,
     to_ken: '',
@@ -43,6 +43,16 @@ const actions = {  // 可以回调处理事情
                 reject(error)
             })
         })
+    },
+    exit({ commit }){
+        return new Promise((resolve, reject) => {
+            removeToKen();
+            removeUserName();
+            commit('SET_TOKEN', '');
+            commit('SET_USERNAME', '');
+            resolve();
+        })
+        
     }
 }
 

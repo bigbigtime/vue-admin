@@ -246,8 +246,6 @@ export default {
           code: ruleForm.code
         }
         root.$store.dispatch('app/login', repuestData).then(response => {
-          console.log('登录成功')
-          console.log(response)
           // 页面跳转
           root.$router.push({
             name: 'Console'
