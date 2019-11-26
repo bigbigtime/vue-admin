@@ -24,3 +24,13 @@ li.el-submenu {
         background-color: $mainCcolor !important;
     }
 }
+
+/* table 样式*/
+div.el-table {
+    td, th { text-align: center; }
+    th {
+        font-weight: bold;
+        color: #344a5f;
+    }
+    td { font-size: 14px; }
+}

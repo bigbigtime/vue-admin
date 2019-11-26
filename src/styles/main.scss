@@ -1,7 +1,8 @@
 @import "./config.scss";
-@import "./normalize.scss";
 @import "./svg.scss";
 @import "./elementui.scss";
-
+@import "./normalize.scss";
 .pull-left { float: left; }
 .pull-right { float: right; }
+
+.black-space-30 { height: 30px; }
