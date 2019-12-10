@@ -46,7 +46,7 @@
 import sha1 from 'js-sha1';
 import { Message } from 'element-ui';
 import { GetSms, Register, Login } from "@/api/login";
-import { reactive, ref, isRef, toRefs, onMounted } from '@vue/composition-api';
+import { reactive, ref, isRef, toRefs, onMounted, watch } from '@vue/composition-api';
 import { stripscript, validatePass, validateEmail, validateVCode } from '@/utils/validate';
 export default {
     name: 'login',
@@ -183,9 +183,6 @@ export default {
         codeButtonStatus.status = params.status;
         codeButtonStatus.text = params.text;
       })
-      /**
-       * 获取验证码
-       */
       const getSms = (() => {
         // 进行提示
         if(ruleForm.username == '' ) {

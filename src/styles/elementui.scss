@@ -34,3 +34,24 @@ div.el-table {
     }
     td { font-size: 14px; }
 }
+/* dialog 样式 */
+.el-dialog__body {
+    padding: 30px 47px !important;
+}
+.el-dialog__footer {
+    text-align: center !important;
+    padding-bottom: 50px !important;
+    .el-button {
+        width: 150px;
+        margin: 0 11px !important;
+    }
+}
+
+div.el-form-item { margin-bottom: 22px; }
+
+/* from 样式 */
+.el-form {
+    .el-form-item:last-child {
+        margin-bottom: 0 !important;
+    }
+}

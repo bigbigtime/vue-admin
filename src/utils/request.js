@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { Message } from 'element-ui';
+import axios from "axios";
+import { Message } from "element-ui";
+import { getToKen, getUserName } from "@/utils/app";
 
 
 // 创建axios，赋给变量service
@@ -24,12 +25,9 @@ service.interceptors.request.use(function (config) {
     // userId
     // sui
     // 业务需求
-
-
     // 最终目地不是在请求头添加参数
-    config.headers['Tokey'] = '11111111'
-    config.headers['userId'] = '44444444'
-    config.headers['sui'] = '33333'
+    config.headers['Tokey'] = getToKen()
+    config.headers['UserName'] = getUserName()
 
     return config;
 }, function (error) {

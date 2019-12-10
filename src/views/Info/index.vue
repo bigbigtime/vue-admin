@@ -5,7 +5,7 @@
                 <div class="label-wrap category">
                     <label for="">类型：</label>
                     <div class="warp-content">
-                        <el-select v-model="value" placeholder="请选择" style="width: 100%;">
+                        <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
                             <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -22,7 +22,7 @@
                     <div class="warp-content">
                         <el-date-picker
                             style="width: 100%;"
-                            v-model="value2"
+                            v-model="date_value"
                             type="datetimerange"
                             align="right"
                             start-placeholder="开始日期"
@@ -38,7 +38,7 @@
                     <div class="warp-content">
                         <el-select v-model="search_key" style="width: 100%;">
                             <el-option 
-                            v-for="item in searchOption" 
+                            v-for="item in search_option" 
                             :key="item.value"
                             :value="item.value"
                             :label="item.label"
@@ -55,13 +55,13 @@
             </el-col>
             <el-col :span="3">&nbsp;</el-col>
             <el-col :span="2">
-                <el-button type="danger" class="pull-right" style="width: 100%;">新增</el-button>
+                <el-button type="danger" class="pull-right" style="width: 100%;" @click="dialog_info = true">新增</el-button>
             </el-col>
         </el-row>
 
         <!-- 表格数据 -->
         <div class="black-space-30"></div>
-        <el-table :data="tableData" border style="width: 100%">
+        <el-table :data="table_data" border style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="title" label="标题" width="830"></el-table-column>
             <el-table-column prop="category" label="类型" width="130"></el-table-column>
@@ -69,8 +69,8 @@
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="danger" size="mini">删除</el-button>
-                    <el-button type="success" size="mini">编辑</el-button>
+                    <el-button type="danger" size="mini" @click="deleteItem">删除</el-button>
+                    <el-button type="success" size="mini" @click="dialog_info = true">编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -78,7 +78,7 @@
         <!--底部分页-->
         <el-row>
             <el-col :span="12">
-                <el-button size="medium">批量删除</el-button>
+                <el-button size="medium" @click="deleteAll">批量删除</el-button>
             </el-col>
             <el-col :span="12">
                 <el-pagination
@@ -93,19 +93,28 @@
                 </el-pagination>
             </el-col>
         </el-row>
-
-
-        
-
-
-
+        <!--新增弹窗-->
+        <DialogInfo :flag.sync="dialog_info" />
     </div>
 </template>
 <script>
-import { reactive, ref } from '@vue/composition-api';
+import DialogInfo from "./dialog/info";
+import { global } from "@/utils/global_V3.0"
+import { reactive, ref, watch, onMounted } from '@vue/composition-api';
 export default {
     name: 'infoIndex',
-    setup(props) {
+    components: { DialogInfo },
+    setup(props, { root }) {
+        const { str: aaa, confirm: cAAA } = global();
+        /**
+         * 数据
+         */
+        const dialog_info = ref(false);  // true、false
+        const search_key = ref('id');
+        const category_value = ref('');
+        const date_value = ref('');
+        const search_keyWork = ref('');
+
         const options = reactive([{
           value: 1,
           label: '国际信息'
@@ -117,17 +126,12 @@ export default {
           label: '行业信息'
         }]);
         // 搜索关键字
-        const searchOption = reactive([
+        const search_option = reactive([
             { value: "id", label: "ID"},
             { value: "title", label: "标题"},
         ])
-        const search_key = ref('id');
-        const value = ref('');
-        const value2 = ref('');
-        const search_keyWork = ref('');
-
         // 表格数据
-        const tableData = reactive([
+        const table_data = reactive([
             {
                 title: '纽约市长白思豪宣布退出总统竞选 特朗普发推回应',
                 category: '国内信息',
@@ -153,27 +157,43 @@ export default {
                 user: '管理员'
             }
         ])
-
-
-        // vue2.0 methods
+        /**
+         * vue2.0 methods
+         */
         const handleSizeChange = (val) => {
             console.log(val)
         }
-
         const handleCurrentChange = (val) => {
             console.log(val)
         }
+        const deleteItem = () => {
+            cAAA({
+                content: "确认删除当前信息，确认后将无法恢复！！",
+                tip: "警告",
+                fn: confirmDelete,
+                id: '22222'
+            })
+        }
+        const deleteAll = () => {
+            cAAA({
+                content: "确认删除选择的数据，确认后将无法恢复！",
+                tip: "警告",
+                fn: confirmDelete,
+                id: '1111'
+            })
+        }
+      
+        const confirmDelete = (value) => {
+            console.log(value)
+        }
 
         return {
-            handleSizeChange,
-            handleCurrentChange,
-            tableData,
-            options,
-            searchOption,
-            value,
-            value2,
-            search_key,
-            search_keyWork
+            // ref
+            date_value, search_key, search_keyWork, dialog_info, category_value,
+            // reactive
+            table_data, options, search_option,
+            // vue2.0 methdos
+            handleSizeChange, handleCurrentChange, deleteItem, deleteAll
         }
     }
 }
@@ -184,6 +204,5 @@ export default {
     &.category { @include labelDom(left, 60, 40); }
     &.date { @include labelDom(right, 93, 40); }
     &.key-work { @include labelDom(right, 99, 40); }
-    
 }
 </style>
