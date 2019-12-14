@@ -10,13 +10,10 @@ export function global(){
             type: params.type || "warning",
             center: true
         }).then(() => {
-            str.value = params.id;
-            params.fn && params.fn(params.id)
+            str.value = params.id || '';
+            params.fn && params.fn(params.id || '')
         }).catch(() => {
-            // root.$message({
-            //     type: 'info',
-            //     message: '已取消删除'
-            // });
+            params.catchFn && params.catchFn()
         });
     }
 
