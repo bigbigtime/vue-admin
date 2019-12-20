@@ -1,26 +1,31 @@
 <template>
-    <el-dialog title="新增" :visible.sync="dialog_info_flag" @close="close" width="580px">
-        <el-form :model="form">
-            <el-form-item label="类别：" :label-width="formLabelWidth">
-                <el-select v-model="form.category" placeholder="请选择活动区域">
-                    <el-option label="区域一" value="11"></el-option>
-                    <el-option label="区域二" value="22"></el-option>
+    <el-dialog title="新增" :visible.sync="data.dialog_info_flag" @close="close" width="580px" @opened="openDialog">
+        <el-form :model="data.form" ref="addInfoForm">
+            <el-form-item label="类别：" :label-width="data.formLabelWidth">
+                <el-select v-model="data.form.category" placeholder="请选择活动区域">
+                    <el-option 
+                    v-for="item in data.categoryOption" 
+                    :key="item.id" 
+                    :label="item.category_name" 
+                    :value="item.id">
+                    </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="标题：" :label-width="formLabelWidth">
-                <el-input v-model="form.title" placehoder="请输入标题"></el-input>
+            <el-form-item label="标题：" :label-width="data.formLabelWidth">
+                <el-input v-model="data.form.title" placehoder="请输入标题"></el-input>
             </el-form-item>
-            <el-form-item label="概况：" :label-width="formLabelWidth">
-                <el-input type="textarea" v-model="form.content" placehoder="请输入内容"></el-input>
+            <el-form-item label="概况：" :label-width="data.formLabelWidth">
+                <el-input type="textarea" v-model="data.form.content" placehoder="请输入内容"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="close">取消</el-button>
-            <el-button type="danger">确定</el-button>
+            <el-button type="danger" :loading="data.submitLoading" @click="submit">确定</el-button>
         </div>
     </el-dialog>
 </template>
 <script>
+import { AddInfo } from "@/api/news";
 import { reactive, ref, watch } from '@vue/composition-api';
 export default {
     name: 'dialogInfo',
@@ -28,32 +33,93 @@ export default {
         flag: {
             type: Boolean,
             default: false
+        },
+        category: {
+            type: Array,
+            default: () => []
         }
     },
-    setup(props, { emit }){
-        const dialog_info_flag = ref(false);
-        const formLabelWidth = ref('70px');
-        const form = reactive({
-            category: '',
-            title: '',
-            content: ''
-        })
+    // vue2.0
+    // data(){
+    //     return  {
+    //         dialog_info_flag: false,
+    //         formLabelWidth: '70px',
+    //         form: {
+    //             category: '',
+    //             title: '',
+    //             content: ''
+    //         },
+    //         categoryOption: [],
+    //         submitLoading: false
+    //     }
+    // },
+    setup(props, { emit, root, refs }){
+        /**
+         * 数据
+         */
+        const data = reactive({
+            dialog_info_flag: false,  // 弹窗标记
+            formLabelWidth: '70px',
+            form: {
+                category: '',
+                title: '',
+                content: ''
+            },
+            // 分类下拉
+            categoryOption: [],
+            // 按钮加载
+            submitLoading: false
+        });
         // watch
-        watch(() => dialog_info_flag.value = props.flag)
+        watch(() => data.dialog_info_flag = props.flag);
         /**
          * vue2.0 methods
          */
         const close = () => {
-            dialog_info_flag.value = false;
+            data.dialog_info_flag = false;
+            resetForm()
             emit("update:flag", false);
         }
+        const openDialog = () => {
+            data.categoryOption = props.category
+        }
+        const resetForm = () => {
+            data.form.category = ''
+            data.form.title = ''
+            data.form.content = ''
+        }
+        const submit = () => {
+            let requestData = {
+                category: data.form.category,
+                title: data.form.title,
+                content: data.form.content,
+            }
+            if(!data.form.category) {
+                root.$message({
+                    message: '分类不能为空！！',
+                    type: 'error'
+                })
+                return false;
+            }
+            data.submitLoading = true
+            AddInfo(requestData).then(response => {
+                let data = response.data
+                root.$message({
+                    message: data.message,
+                    type: 'success'
+                })
+                data.submitLoading = false
+                // 重置表单
+                resetForm()
+                // root.$refs['addInfoForm'].resetFields();
+            }).catch(error => {
+                data.submitLoading = false
+            })
+        }
         return {
-            // ref
-            dialog_info_flag, formLabelWidth,
-            // reactive
-            form, 
+            data,
             // methods
-            close
+            close, openDialog, submit
         }
     }
 }

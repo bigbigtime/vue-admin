@@ -3,14 +3,14 @@
         <el-row :gutter="14">
             <el-col :span="4">
                 <div class="label-wrap category">
-                    <label for="">类型：</label>
+                    <label for="">分类：</label>
                     <div class="warp-content">
                         <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
                             <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
+                                v-for="item in options.category"
+                                :key="item.id"
+                                :label="item.category_name"
+                                :value="item.id">
                             </el-option>
                         </el-select>
                     </div>
@@ -61,11 +61,11 @@
 
         <!-- 表格数据 -->
         <div class="black-space-30"></div>
-        <el-table :data="table_data" border style="width: 100%">
+        <el-table :data="table_data.item" border style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="title" label="标题" width="830"></el-table-column>
-            <el-table-column prop="category" label="类型" width="130"></el-table-column>
-            <el-table-column prop="date" label="日期" width="237"></el-table-column>
+            <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
+            <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
@@ -88,18 +88,19 @@
                     @current-change="handleCurrentChange"
                     :page-sizes="[10, 20, 50, 100]"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="1000"
+                    :total="total"
                 >
                 </el-pagination>
             </el-col>
         </el-row>
         <!--新增弹窗-->
-        <DialogInfo :flag.sync="dialog_info" />
+        <DialogInfo :flag.sync="dialog_info" :category="options.category" />
     </div>
 </template>
 <script>
+import { GetCategory, GetList } from "@/api/news";
 import DialogInfo from "./dialog/info";
-import { global } from "@/utils/global_V3.0"
+import { global } from "@/utils/global_V3.0";
 import { reactive, ref, watch, onMounted } from '@vue/composition-api';
 export default {
     name: 'infoIndex',
@@ -114,57 +115,34 @@ export default {
         const category_value = ref('');
         const date_value = ref('');
         const search_keyWork = ref('');
+        const total = ref(0);
 
-        const options = reactive([{
-          value: 1,
-          label: '国际信息'
-        }, {
-          value: 2,
-          label: '国内信息'
-        }, {
-          value: 3,
-          label: '行业信息'
-        }]);
+        const options = reactive({
+            category: []
+        });
         // 搜索关键字
         const search_option = reactive([
             { value: "id", label: "ID"},
             { value: "title", label: "标题"},
         ])
+        // 页码
+        const page = reactive({
+            pageNumber: 1,
+            pageSize: 10
+        })
         // 表格数据
-        const table_data = reactive([
-            {
-                title: '纽约市长白思豪宣布退出总统竞选 特朗普发推回应',
-                category: '国内信息',
-                date: '2019-09-10 19:31:31',
-                user: '管理员'
-            },
-            {
-                title: '习近平在中央政协工作会议暨庆祝中国人民政治协商会议成立70周年大会上发表重要讲话',
-                category: '国内信息',
-                date: '2019-09-10 19:31:31',
-                user: '管理员'
-            },
-            {
-                title: '基里巴斯与台当局"断交" 系蔡当局上台后断交第7国',
-                category: '国内信息',
-                date: '2019-09-10 19:31:31',
-                user: '管理员'
-            },
-            {
-                title: '不选了！纽约市长白思豪宣布退出2020美国大选',
-                category: '国内信息',
-                date: '2019-09-10 19:31:31',
-                user: '管理员'
-            }
-        ])
+        const table_data = reactive({
+            item: []
+        })
         /**
          * vue2.0 methods
          */
         const handleSizeChange = (val) => {
-            console.log(val)
+            page.pageSize = val
         }
         const handleCurrentChange = (val) => {
-            console.log(val)
+            page.pageNumber = val
+            getList()
         }
         const deleteItem = () => {
             cAAA({
@@ -172,6 +150,24 @@ export default {
                 tip: "警告",
                 fn: confirmDelete,
                 id: '22222'
+            })
+        }
+        const getList = () => {
+            let requestData = {
+                categoryId: '',
+                startTiem: '',
+                endTime: '',
+                title: '',
+                id: '',
+                pageNumber: page.pageNumber,
+                pageSize: page.pageSize
+            }
+            GetList(requestData).then(response => {
+                let data = response.data.data
+                // 更新数据
+                table_data.item = data.data
+                // 页面统计数据
+                total.value = data.total
             })
         }
         const deleteAll = () => {
@@ -187,9 +183,24 @@ export default {
             console.log(value)
         }
 
+        const getInfoCategory = () => {
+            root.$store.dispatch('common/getInfoCategory').then(response => {
+                options.category = response
+            })
+        }
+        /**
+         * 生命周期
+         */
+        onMounted(() => {
+            // 获取分类
+            getInfoCategory();
+            // 获取列表
+            getList();
+        })
+
         return {
             // ref
-            date_value, search_key, search_keyWork, dialog_info, category_value,
+            date_value, search_key, search_keyWork, dialog_info, category_value, total,
             // reactive
             table_data, options, search_option,
             // vue2.0 methdos

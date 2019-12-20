@@ -50,13 +50,15 @@
 </template>
 <script>
 import { AddFristCategory, GetCategory, DeleteCategory, EditCategory } from "@/api/news";
-import { reactive, ref, onMounted } from "@vue/composition-api";
-import { global } from "@/utils/global_V3.0"
+import { reactive, ref, onMounted, watch } from "@vue/composition-api";
+import { global } from "@/utils/global_V3.0";
+import { common } from "@/api/common";
 export default {
     name: 'category',
     setup(props, { root, refs }) {
         // global
         const { confirm } = global();
+        const { getInfoCategory, categoryItem } = common();
         /**
          * reactive
          */
@@ -126,12 +128,6 @@ export default {
             category_first_disabled.value = false
             submit_button_disabled.value = false
             // 按alt + 左右方向键，可以返回光标上次，或下次的位置
-        }
-        const getCategory = () => {
-            GetCategory({}).then(response => {
-                let data = response.data.data.data
-                category.item = data
-            }).catch(error => {})
         }
         // 删除
         const deleteCategoryComfirm = (categoryID) => {
@@ -210,7 +206,13 @@ export default {
          */
         // 挂载完成时执行，（页面DOM元素完成时，实例完成）
         onMounted(() => {
-            getCategory()
+            getInfoCategory()
+        })
+        /**
+         * watch
+         */
+        watch(() => categoryItem.item, (value) => {
+            category.item = value
         })
 
         return  {
