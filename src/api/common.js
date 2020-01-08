@@ -1,4 +1,4 @@
-import { GetCategory } from "@/api/news";
+import { GetCategory, GetCategoryAll } from "@/api/news";
 import { reactive } from "@vue/composition-api";
 export function common(){
     const categoryItem = reactive({
@@ -13,8 +13,20 @@ export function common(){
         }).catch(error => {})
     }
 
+    /**
+     * 获取全部分类
+     */
+    const getInfoCategoryAll = () => {
+        GetCategoryAll({}).then(response => {
+            console.log(response)
+            categoryItem.item = response.data.data
+        }).catch(error => {})
+    }
+    
+
     return  {
         getInfoCategory,
+        getInfoCategoryAll,
         categoryItem
     }
 }

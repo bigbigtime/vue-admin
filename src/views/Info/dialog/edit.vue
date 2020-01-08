@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="新增" :visible.sync="data.dialog_info_flag" @close="close" width="580px" @opened="openDialog">
+    <el-dialog title="修改" :visible.sync="data.dialog_info_flag" @close="close" width="580px" @opened="openDialog">
         <el-form :model="data.form" ref="addInfoForm">
             <el-form-item label="类别：" :label-width="data.formLabelWidth" prop="category">
                 <el-select v-model="data.form.category" placeholder="请选择活动区域">
@@ -25,7 +25,7 @@
     </el-dialog>
 </template>
 <script>
-import { AddInfo } from "@/api/news";
+import { AddInfo, GetList, EdidInfo } from "@/api/news";
 import { reactive, ref, watch } from '@vue/composition-api';
 export default {
     name: 'dialogInfo',
@@ -37,6 +37,10 @@ export default {
         category: {
             type: Array,
             default: () => []
+        },
+        id: {
+            type: String,
+            default: ""
         }
     },
     // vue2.0
@@ -82,6 +86,22 @@ export default {
         }
         const openDialog = () => {
             data.categoryOption = props.category
+            getInfo()
+        }
+        const getInfo = () => {
+            let requestData = {
+                pageNumber: 1,
+                pageSize: 1,
+                id: props.id
+            }
+            GetList(requestData).then(response => {
+                let responseData = response.data.data.data[0]
+                data.form = {
+                    category: responseData.categoryId,
+                    title: responseData.title,
+                    content: responseData.content
+                }
+            })
         }
         const resetForm = () => {
             refs.addInfoForm.resetFields();
@@ -91,7 +111,8 @@ export default {
         }
         const submit = () => {
             let requestData = {
-                category: data.form.category,
+                id: props.id,
+                categoryId: data.form.category,
                 title: data.form.title,
                 content: data.form.content,
             }
@@ -103,15 +124,21 @@ export default {
                 return false;
             }
             data.submitLoading = true
-            AddInfo(requestData).then(response => {
+            EdidInfo(requestData).then(response => {
                 let responseData = response.data
                 root.$message({
                     message: responseData.message,
                     type: 'success'
                 })
                 data.submitLoading = false
+                /**
+                 * 两种刷新数据方式
+                 * 1、暴力型，直接刷新接口
+                 * 2、返回列表，手动修改指定的数据
+                 */
+                emit("getListEmit");
                 // 重置表单
-                resetForm()
+                // resetForm()
                 // root.$refs['addInfoForm'].resetFields();
             }).catch(error => {
                 data.submitLoading = false

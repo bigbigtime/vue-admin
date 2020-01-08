@@ -12,8 +12,8 @@
                                 <svg-icon icon-class="plus"></svg-icon>
                                 {{ firstItem.category_name }}
                                 <div class="button-group">
-                                    <el-button size="mini" type="danger"@click="editCategory({ data: firstItem, type: 'category_first_edit' })" round>编辑</el-button>
-                                    <el-button size="mini" type="success" round>添加子级</el-button>
+                                    <el-button size="mini" type="danger" @click="editCategory({ data: firstItem, type: 'category_first_edit' })" round>编辑</el-button>
+                                    <el-button size="mini" type="success" round @click="handlerAddChildren({ data: firstItem, type: 'category_children_add' })">添加子级</el-button>
                                     <el-button size="mini" round @click="deleteCategoryComfirm(firstItem.id)">删除</el-button>
                                 </div>
                             </h4>
@@ -49,7 +49,7 @@
     </div>
 </template>
 <script>
-import { AddFristCategory, GetCategory, DeleteCategory, EditCategory } from "@/api/news";
+import { AddFristCategory, GetCategory, DeleteCategory, EditCategory, AddChildrenCategory } from "@/api/news";
 import { reactive, ref, onMounted, watch } from "@vue/composition-api";
 import { global } from "@/utils/global_V3.0";
 import { common } from "@/api/common";
@@ -58,7 +58,7 @@ export default {
     setup(props, { root, refs }) {
         // global
         const { confirm } = global();
-        const { getInfoCategory, categoryItem } = common();
+        const { getInfoCategory, getInfoCategoryAll, categoryItem } = common();
         /**
          * reactive
          */
@@ -86,6 +86,8 @@ export default {
         const submit = () => {
             if(subit_button_type.value == 'category_first_add') { addFirstCategory(); }
             if(subit_button_type.value == 'category_first_edit') { editFirstCategory(); }
+            if(subit_button_type.value == 'category_children_add') { addChildrenCategory(); }
+            
         }
         const addFirstCategory = () => {
             if(!form.categoryName) {
@@ -128,6 +130,46 @@ export default {
             category_first_disabled.value = false
             submit_button_disabled.value = false
             // 按alt + 左右方向键，可以返回光标上次，或下次的位置
+        }
+        const handlerAddChildren = (params) => {
+            // 更新确定按钮类型
+            subit_button_type.value = params.type
+            // 存储数据
+            category.current = params.data
+            // 禁用一级输入框
+            category_first_disabled.value = true
+            // 启用确定按钮
+            submit_button_disabled.value = false
+            // 启用子级输入框
+            category_children_disabled.value = false
+            // 显示子级输入框
+            category_children_input.value = true
+            // 显示一级分类文本
+            form.categoryName = params.data.category_name
+        }
+        const addChildrenCategory = () => {
+            if(!form.secCategoryName) {
+                root.$message({
+                    message: "子级分类名称不能为空！！",
+                    type: "error"
+                })
+                return false;
+            }
+            let requestData = {
+                categoryName: form.secCategoryName,
+                parentId: category.current.id
+            }
+            AddChildrenCategory(requestData).then(response => {
+                let responseData = response.data;
+                root.$message({
+                    message: responseData.message,
+                    type: "success"
+                })
+                // 调用分类列表接口
+                getInfoCategoryAll()
+                // 清空子级输入框内容
+                form.secCategoryName = "";
+            })
         }
         // 删除
         const deleteCategoryComfirm = (categoryID) => {
@@ -206,7 +248,7 @@ export default {
          */
         // 挂载完成时执行，（页面DOM元素完成时，实例完成）
         onMounted(() => {
-            getInfoCategory()
+            getInfoCategoryAll()
         })
         /**
          * watch
@@ -221,7 +263,7 @@ export default {
             // reactive
             form, category,
             // methods
-            submit, addFirst, deleteCategory, deleteCategoryComfirm, editCategory
+            submit, addFirst, deleteCategory, deleteCategoryComfirm, editCategory, handlerAddChildren, addChildrenCategory
         }
     }
 }

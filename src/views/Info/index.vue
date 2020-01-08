@@ -24,6 +24,8 @@
                             style="width: 100%;"
                             v-model="date_value"
                             type="datetimerange"
+                            format="yyyy 年 MM 月 dd 日"
+                            value-format="yyyy-MM-dd HH:mm:ss"
                             align="right"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
@@ -51,7 +53,7 @@
                 <el-input v-model="search_keyWork" placeholder="请输入内容" style="width: 100%;"></el-input>
             </el-col>
             <el-col :span="2">
-                <el-button type="danger" style="width: 100%;">搜索</el-button>
+                <el-button type="danger" style="width: 100%;" @click="getList">搜索</el-button>
             </el-col>
             <el-col :span="3">&nbsp;</el-col>
             <el-col :span="2">
@@ -61,16 +63,16 @@
 
         <!-- 表格数据 -->
         <div class="black-space-30"></div>
-        <el-table :data="table_data.item" border style="width: 100%">
+        <el-table :data="table_data.item" border v-loading="loadingData" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="title" label="标题" width="830"></el-table-column>
-            <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
-            <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
+            <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
+            <el-table-column prop="createDate" label="日期" width="237" :formatter="toData"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="danger" size="mini" @click="deleteItem">删除</el-button>
-                    <el-button type="success" size="mini" @click="dialog_info = true">编辑</el-button>
+                    <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
+                    <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -95,27 +97,36 @@
         </el-row>
         <!--新增弹窗-->
         <DialogInfo :flag.sync="dialog_info" :category="options.category" />
+        <!--修必弹窗-->
+        <DialogEditInfo :flag.sync="dialog_info_edit" :id="infoId" :category="options.category" @getListEmit="getList" />
     </div>
 </template>
 <script>
-import { GetCategory, GetList } from "@/api/news";
+import { GetCategory, GetList, DeleteInfo } from "@/api/news";
 import DialogInfo from "./dialog/info";
+import DialogEditInfo from "./dialog/edit";
 import { global } from "@/utils/global_V3.0";
 import { reactive, ref, watch, onMounted } from '@vue/composition-api';
+import { timestampToTime } from "@/utils/common";
 export default {
     name: 'infoIndex',
-    components: { DialogInfo },
+    components: { DialogInfo, DialogEditInfo },
     setup(props, { root }) {
-        const { str: aaa, confirm: cAAA } = global();
+        const { str: aaa, confirm } = global();
         /**
          * 数据
          */
         const dialog_info = ref(false);  // true、false
+        const dialog_info_edit = ref(false);  // true、false
         const search_key = ref('id');
         const category_value = ref('');
         const date_value = ref('');
         const search_keyWork = ref('');
         const total = ref(0);
+        const deleteInfoId = ref('');
+        const infoId = ref("");
+        // loading
+        const loadingData = ref(false);
 
         const options = reactive({
             category: []
@@ -144,49 +155,101 @@ export default {
             page.pageNumber = val
             getList()
         }
-        const deleteItem = () => {
-            cAAA({
-                content: "确认删除当前信息，确认后将无法恢复！！",
-                tip: "警告",
-                fn: confirmDelete,
-                id: '22222'
-            })
-        }
-        const getList = () => {
+        /**
+         * 搜索条件处理
+         */
+        const formatData = () => {
             let requestData = {
-                categoryId: '',
-                startTiem: '',
-                endTime: '',
-                title: '',
-                id: '',
                 pageNumber: page.pageNumber,
                 pageSize: page.pageSize
+            };
+            // 分类ID
+            if(category_value.value) { requestData.categoryId = category_value.value }
+            // 日期
+            if(date_value.value.length > 0) {
+                requestData.startTiem = date_value.value[0]
+                requestData.endTime = date_value.value[1]
             }
+            // 关键字
+            if(search_keyWork.value) { requestData[search_key.value] = search_keyWork.value; }
+            return requestData;
+        }
+
+        const editInfo = (id) => {
+            infoId.value = id;
+            dialog_info_edit.value = true;
+        }
+        
+        const getList = () => {
+            // 单独处理数据
+            let requestData = formatData();
+            // 加载状态
+            loadingData.value = true;
             GetList(requestData).then(response => {
                 let data = response.data.data
                 // 更新数据
                 table_data.item = data.data
                 // 页面统计数据
                 total.value = data.total
+                // 加载状态
+                loadingData.value = false;
+            }).catch(error => {
+                loadingData.value = false;
+            })
+        }
+        /**
+         * 删除数据
+         */
+        const deleteItem = (id) => {
+            deleteInfoId.value = [id];
+            confirm({
+                content: "确认删除当前信息，确认后将无法恢复！！",
+                tip: "警告",
+                fn: confirmDelete
             })
         }
         const deleteAll = () => {
-            cAAA({
+            if(!deleteInfoId.value || deleteInfoId.value.length == 0) {
+                root.$message({
+                    message: "请选择要删除的数据！！",
+                    type: "error"
+                })
+                return false;
+            }
+            confirm({
                 content: "确认删除选择的数据，确认后将无法恢复！",
                 tip: "警告",
-                fn: confirmDelete,
-                id: '1111'
+                fn: confirmDelete
             })
         }
       
         const confirmDelete = (value) => {
-            console.log(value)
+            DeleteInfo({id: deleteInfoId.value}).then(response => {
+                deleteInfoId.value = '';
+                getList()
+            })
         }
 
         const getInfoCategory = () => {
             root.$store.dispatch('common/getInfoCategory').then(response => {
                 options.category = response
             })
+        }
+
+        const toData = (row, column, cellValue, index) => {
+            return timestampToTime(row.createDate);
+        }
+
+        const toCategory = (row) => {
+            // 调用一个函数，返回一个新的值，替换原始值
+            let categoryId = row.categoryId;
+            let categoryData = options.category.filter(item => item.id == categoryId)[0];
+            return categoryData.category_name;
+        }
+
+        const handleSelectionChange = (val) => {
+            let id = val.map(item => item.id);
+            deleteInfoId.value = id
         }
         /**
          * 生命周期
@@ -200,11 +263,11 @@ export default {
 
         return {
             // ref
-            date_value, search_key, search_keyWork, dialog_info, category_value, total,
+            date_value, search_key, search_keyWork, dialog_info, category_value, total, loadingData, dialog_info_edit, infoId,
             // reactive
             table_data, options, search_option,
             // vue2.0 methdos
-            handleSizeChange, handleCurrentChange, deleteItem, deleteAll
+            handleSizeChange, handleCurrentChange, deleteItem, deleteAll, toData, toCategory, handleSelectionChange, getList, editInfo
         }
     }
 }
