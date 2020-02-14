@@ -33,6 +33,9 @@
 - 太多了，不想写...
 ```
 
+## 哔哩哔哩视频
+[视频](https://space.bilibili.com/431551452)
+[学习知识](http://www.web-jshtml.cn/special/downfile/)
 
 ## 进群
 
