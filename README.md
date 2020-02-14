@@ -34,8 +34,9 @@
 ```
 
 ## 哔哩哔哩视频
-[视频](https://space.bilibili.com/431551452)
-[学习知识](http://www.web-jshtml.cn/special/downfile/)
+[视频列表](https://space.bilibili.com/431551452)<br />
+[学习知识](http://www.web-jshtml.cn/special/downfile/)<br />
+[手把手撸码前端社区](http://www.web-jshtml.cn)
 
 ## 进群
 
