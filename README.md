@@ -42,5 +42,26 @@
 同时服务器方面也是一部分支出，因为接口请求量比较大，服务器压力大，也在不断升级服务器所以也是一种成本；
 所以对视频教学的内容知识进行一定的收费！
 后续将会继续录制《JS ES5/6》、《React》、《响应式，定义自己的CSS库》、《小程序》等或其他相关技术
-(https://panjiachen.github.io/donate/donation.png)
 
+## 为知识付费，10元福利
+```
+- 视频1080P高清下载
+- 后续录制新技术视频均半价获得
+- 进群讨论，提出技术难点
+- 项目接口API不断更新
+- 每天回答所提问题（选择性回答）
+```
+
+<p>
+<img src="http://www.web-jshtml.cn/special/downfile/images/code2.png"><br />
+ 付费福利
+</p>
+
+<p>
+<img src="http://www.web-jshtml.cn/special/downfile/images/code.png"><br />
+ 加微信好友
+</p>
+
+添加好友后，将支付的截图私信我。<br />
+确认后即可拉入群内，一起学习一起成长！！<br />
+手把手撸码前端 专注入门级视频录制 粤ICP备16087719号-1
