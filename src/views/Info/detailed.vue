@@ -12,16 +12,7 @@
     </el-form-item>
 
     <el-form-item label="缩略图：">
-      <el-upload
-        class="avatar-uploader"
-        action="http://up-z2.qiniup.com"
-        :data="data.uploadKey"
-        :show-file-list="false"
-        :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload">
-        <img v-if="form.imgUrl" :src="form.imgUrl" class="avatar">
-        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-      </el-upload>
+      <UploadImg :imgUrl.sync="form.imgUrl" :config="uploadImgConfig" />
     </el-form-item>
 
     <el-form-item label="发布日期：">
@@ -39,9 +30,10 @@
 </template>
 <script>
 import { GetList, EdidInfo } from "@/api/news";
-import { QiniuToKen } from "@/api/common";
 import { timestampToTime } from "@/utils/common";
 import { reactive, ref, watch, onMounted } from '@vue/composition-api';
+// 组件
+import UploadImg from "@c/UploadImg"
 // 富文本编辑器
 import { quillEditor } from "vue-quill-editor"; 
 import 'quill/dist/quill.core.css';
@@ -50,17 +42,21 @@ import 'quill/dist/quill.bubble.css';
 
 export default {
   name: "infoDetailed",
-  components: { quillEditor },
+  components: { quillEditor, UploadImg },
   setup(props, { root }){
+    // 图片上传配置
+    const uploadImgConfig = reactive({
+      action: "http://up-z2.qiniup.com",
+      accesskey: "Avh-EZZAa4TxqPQZsEW42fXBUbTMFi-RKSZTRKJj",
+      secretkey: "l9AXtnhCVkZexXNRcmHXzmecXiCUiLynwGboMeUw",
+      buckety: "webjshtml"
+    });
+
     const data = reactive({
       id: root.$route.params.id || root.$store.getters["infoDetailed/infoId"],
       category: [],
       editorOption: {},
-      submitLoading: false,
-      uploadKey: {
-        token: "",
-        key: ""
-      }
+      submitLoading: false
     })
 
     const form = reactive({
@@ -70,26 +66,6 @@ export default {
       content: "",
       imgUrl: ""
     })
-
-    const handleAvatarSuccess = (res, file) => {
-      form.imgUrl = `${root.$store.getters["common/qiniuUrl"]}${res.key}`
-    }
-      
-    const beforeAvatarUpload = (file) => {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isJPG) {
-        root.$message.error('上传头像图片只能是 JPG 格式!');
-      }
-      if (!isLt2M) {
-        root.$message.error('上传头像图片大小不能超过 2MB!');
-      }
-      // 文件名转码
-      let suffix = file.name;
-      let key = encodeURI(`${suffix}`);
-      data.uploadKey.key = key;
-      return isJPG && isLt2M;
-    }
  
 
     /**
@@ -144,28 +120,15 @@ export default {
       })
     }
 
-    /**
-     * 获取七牛云token
-     */
-    const getQiniuToKen = () => {
-      let requestData = {
-        "accesskey": "Avh-EZZAa4TxqPQZsEW42fXBUbTMFi-RKSZTRKJj",
-        "secretkey": "l9AXtnhCVkZexXNRcmHXzmecXiCUiLynwGboMeUw",
-        "buckety": "webjshtml"
-      }
-      QiniuToKen(requestData).then(response => {
-        data.uploadKey.token = response.data.data.token
-      })
-    }
+    
 
     onMounted(() => {
       getInfoCategory()
       getInfo()
-      getQiniuToKen()
     })
 
     return {
-      data, form, submit, handleAvatarSuccess, beforeAvatarUpload
+      data, form, submit, uploadImgConfig
     }
   }
 }
