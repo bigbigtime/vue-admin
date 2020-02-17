@@ -41,9 +41,10 @@ module.exports = {
     // css预设器配置项
     loaderOptions: {
         sass: { 
-            data: `@import "./src/styles/main.scss";`
+          data: `@import "./src/styles/main.scss";`
         }
     },
+    // requireModuleExtension: true
     // 启用 CSS modules for all css / pre-processor files.
     modules: false
   },

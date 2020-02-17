@@ -60,12 +60,11 @@
                 <el-button type="danger" class="pull-right" style="width: 100%;" @click="dialog_info = true">新增</el-button>
             </el-col>
         </el-row>
-
         <!-- 表格数据 -->
         <div class="black-space-30"></div>
         <el-table :data="table_data.item" border v-loading="loadingData" @selection-change="handleSelectionChange" style="width: 100%">
             <el-table-column type="selection" width="45"></el-table-column>
-            <el-table-column prop="title" label="标题" width="830"></el-table-column>
+            <el-table-column prop="title" label="标题" width="750"></el-table-column>
             <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
             <el-table-column prop="createDate" label="日期" width="237" :formatter="toData"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
@@ -73,6 +72,7 @@
                 <template slot-scope="scope">
                     <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
                     <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
+                    <el-button type="success" size="mini" @click="detailed(scope.row)">编辑详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -95,6 +95,7 @@
                 </el-pagination>
             </el-col>
         </el-row>
+        
         <!--新增弹窗-->
         <DialogInfo :flag.sync="dialog_info" :category="options.category" />
         <!--修必弹窗-->
@@ -178,6 +179,35 @@ export default {
         const editInfo = (id) => {
             infoId.value = id;
             dialog_info_edit.value = true;
+        }
+
+        /**
+         * 详情页
+         */
+        const detailed = (data) => {
+            // 预先存值
+            // root.$store.commit("infoDetailed/SET_ID", data.id);
+            // root.$store.commit("infoDetailed/SET_TITLE", data.title);
+            root.$store.commit("infoDetailed/UPDATE_STATE_VALUE", {
+                id: {
+                    value: data.id,
+                    sessionKey: "infoId",
+                    session: true
+                },
+                title: {
+                    value: data.title,
+                    sessionKey: "infoTitle",
+                    session: true
+                }
+            });
+            // 跳转页面
+            root.$router.push({
+                name: "InfoDetailed",
+                params: {
+                    id: data.id, 
+                    title: data.title
+                }
+            })
         }
         
         const getList = () => {
@@ -267,7 +297,7 @@ export default {
             // reactive
             table_data, options, search_option,
             // vue2.0 methdos
-            handleSizeChange, handleCurrentChange, deleteItem, deleteAll, toData, toCategory, handleSelectionChange, getList, editInfo
+            handleSizeChange, handleCurrentChange, deleteItem, deleteAll, toData, toCategory, handleSelectionChange, getList, editInfo, detailed
         }
     }
 }
