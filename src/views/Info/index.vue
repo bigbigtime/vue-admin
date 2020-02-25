@@ -39,14 +39,6 @@
                     <label for="">关键字：&nbsp;&nbsp;</label>
                     <div class="warp-content">
                         <SelectVue :config="data.configOption"/>
-                        <!-- <el-select v-model="search_key" style="width: 100%;">
-                            <el-option 
-                            v-for="item in search_option" 
-                            :key="item.value"
-                            :value="item.value"
-                            :label="item.label"
-                            ></el-option>
-                        </el-select> -->
                     </div>
                 </div>
             </el-col>
@@ -121,7 +113,9 @@ export default {
          * 数据
          */
         const data = reactive({
-            configOption: ["id", "title"],
+            configOption: {
+                init: ["id", "title"]
+            },
         });
         const dialog_info = ref(false);  // true、false
         const dialog_info_edit = ref(false);  // true、false

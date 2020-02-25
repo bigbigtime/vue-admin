@@ -1,22 +1,16 @@
 <template>
-    <el-select v-model="data.selectValue" placeholder="请选择">
-        <el-option v-for="item in data.initOption" :key="item.value" :value="item.value" :label="item.label"></el-option>
+    <el-select v-model="selectValue" placeholder="请选择">
+        <el-option v-for="item in initOptionData" :key="item.value" :value="item.value" :label="item.label"></el-option>
     </el-select>
 </template>
 <script>
 import { reactive, onMounted } from '@vue/composition-api';
 export default {
     name: "",
-    props: {
-        config: {
-            type: Object,
-            default: () => {}
-        }
-    },
-    setup(props, { root }){
-        const data = reactive({
+    data(){
+        return {
             selectValue: "",
-            initOption: [],
+            initOptionData: [],
             option: [
                 { value: "name", label: "姓名" },
                 { value: "phone", label: "手机号" },
@@ -24,13 +18,26 @@ export default {
                 { value: "id", label: "ID" },
                 { value: "title", label: "标题" },
             ]
-        });
-
+        }
+    },
+    beforeCreate(){console.log(1111);},
+    // watch(){},
+    created(){ 
+        console.log(2222);
+    },
+    beforeMount(){ console.log(3333); },
+    mounted(){ 
+        // 已经被渲染 1次
+        console.log(44444);
+        this.initOption();
+        // 2
+    },
+    methods: {
         /**
          * 初始化下拉选择
          */
-        let initOption = () => {
-            let initData = props.config.init;
+        initOption(){
+            let initData = this.config.init;
             let optionArr = [];
             // 数据检验
             if(initData.length === 0) {
@@ -38,7 +45,7 @@ export default {
                 return false;
             }
             initData.forEach(item => {
-                let arr = data.option.filter(elem => elem.value == item); // filter匹配成功后是一个数组，需要取下标第一个
+                let arr = this.option.filter(elem => elem.value == item); // filter匹配成功后是一个数组，需要取下标第一个
                 if(arr.length > 0) {
                     optionArr.push(arr[0]);
                 }
@@ -49,18 +56,24 @@ export default {
                 return false;
             }
             // 初始化赋值
-            data.initOption = optionArr;
+            this.initOptionData = optionArr;
             // 初始化搜索类型
-            data.selectValue = optionArr[0].value;
+            this.selectValue = optionArr[0].value;
         }
-        /**
-         * 组件挂载完成时
-         */
-        onMounted(() => {
-            initOption()
-        })
-        return {
-            data
+    },
+    props: {
+        config: {
+            type: Object,
+            default: () => {}
+        }
+    },
+    watch: {
+        config: {
+            handler(newValue, oldValue){
+                console.log(55555);
+                this.initOption();
+            },
+            immediate: true  // 组件初始化时，马上对config监听。
         }
     }
 }
