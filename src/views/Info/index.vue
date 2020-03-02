@@ -38,14 +38,7 @@
                 <div class="label-wrap key-work">
                     <label for="">关键字：&nbsp;&nbsp;</label>
                     <div class="warp-content">
-                        <el-select v-model="search_key" style="width: 100%;">
-                            <el-option 
-                            v-for="item in search_option" 
-                            :key="item.value"
-                            :value="item.value"
-                            :label="item.label"
-                            ></el-option>
-                        </el-select>
+                        <SelectVue :config="data.configOption"/>
                     </div>
                 </div>
             </el-col>
@@ -109,14 +102,21 @@ import DialogEditInfo from "./dialog/edit";
 import { global } from "@/utils/global_V3.0";
 import { reactive, ref, watch, onMounted } from '@vue/composition-api';
 import { timestampToTime } from "@/utils/common";
+// 组件
+import SelectVue from "@c/Select";
 export default {
     name: 'infoIndex',
-    components: { DialogInfo, DialogEditInfo },
+    components: { DialogInfo, DialogEditInfo, SelectVue },
     setup(props, { root }) {
         const { str: aaa, confirm } = global();
         /**
          * 数据
          */
+        const data = reactive({
+            configOption: {
+                init: ["id", "title"]
+            },
+        });
         const dialog_info = ref(false);  // true、false
         const dialog_info_edit = ref(false);  // true、false
         const search_key = ref('id');
@@ -295,7 +295,7 @@ export default {
             // ref
             date_value, search_key, search_keyWork, dialog_info, category_value, total, loadingData, dialog_info_edit, infoId,
             // reactive
-            table_data, options, search_option,
+            data, table_data, options, search_option,
             // vue2.0 methdos
             handleSizeChange, handleCurrentChange, deleteItem, deleteAll, toData, toCategory, handleSelectionChange, getList, editInfo, detailed
         }

@@ -47,15 +47,10 @@
 所以对视频教学的内容知识进行一定的收费！
 后续将会继续录制《JS ES5/6》、《React》、《响应式，定义自己的CSS库》、《小程序》等或其他相关技术
 
-## 为知识付费，10元福利
-```
-- 视频1080P高清下载
-- 后续录制新技术视频均半价获得
-- 进群讨论，提出技术难点
-- 项目接口API不断更新
-- 每天回答所提问题（选择性回答）
-```
+## 为知识付费
 
+<img src="http://www.web-jshtml.cn/file/user/commonly.png">
+<img src="http://www.web-jshtml.cn/file/user/permanent.png"><br />
 <p>
 <img src="http://www.web-jshtml.cn/special/downfile/images/code2.png"><br />
  付费福利
