@@ -24,7 +24,15 @@
             </el-col>
         </el-row>
         <div class="black-space-30"></div>
-        <TableVue :config="data.configTable" />
+        <TableVue :config="data.configTable">
+            <template v-slot:status="slotData">
+                <el-switch v-model="slotData.data.name" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            </template>
+            <template v-slot:operation="slotData">
+                <el-button size="small" type="danger" @click="operation(slotData.data)">删除</el-button>
+                <el-button size="small" type="success" @click="operation(slotData.data)">编辑</el-button>
+            </template>
+        </TableVue>
     </div>
 </template>
 <script>
@@ -44,13 +52,11 @@ export default {
             configTable: {
                 // 多选框
                 selection: false,
-                // 翻页记录checkbox 
-                recordCheckbox: true,
                 // 表头
                 tHead: [
                     { 
                         label: "邮箱/用户名",
-                        field: "email",
+                        field: "title",
                         width: 200
                     },
                     { 
@@ -69,13 +75,40 @@ export default {
                     { 
                         label: "角色",
                         field: "role"
+                    },
+                    { 
+                        label: "禁启用状态",
+                        field: "status",
+                        columnType: "slot",
+                        slotName: "status"
+                    },
+                    { 
+                        label: "操作",
+                        columnType: "slot",
+                        slotName: "operation"
                     }
-                ]
+                ],
+                // 请求接口URL
+                requestData: {
+                    url: "getUserList",
+                    data: {
+                        pageNumber: 1,
+                        pageSize: 10
+                    }
+                }
             }
         });
 
+        /**
+         * methods
+         */
+        let operation = (params) => {
+            console.log(params);
+        }
+
         return {
-            data
+            data, 
+            operation
         }
     }
 }
