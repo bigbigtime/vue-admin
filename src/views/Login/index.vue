@@ -131,7 +131,7 @@ export default {
       const timer = ref(null);
       // 表单绑定数据
       const ruleForm = reactive({
-        username: '',
+        username: '409019683@qq.com',
         password: '',
         passwords: '',
         code: ''
@@ -208,7 +208,8 @@ export default {
           let data = response.data;
           root.$message({
             message: data.message,
-            type: 'success'
+            type: 'success',
+            dangerouslyUseHTMLString: true
           });
           // 启用登录或注册按钮
           loginButtonStatus.value = false;
