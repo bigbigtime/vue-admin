@@ -131,8 +131,8 @@ export default {
       const timer = ref(null);
       // 表单绑定数据
       const ruleForm = reactive({
-        username: '409019683@qq.com',
-        password: '',
+        username: '410293095@qq.com',
+        password: 'wo123456789',
         passwords: '',
         code: ''
       });

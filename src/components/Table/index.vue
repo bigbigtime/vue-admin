@@ -138,7 +138,7 @@ export default {
                 pageSize: 10
             })
             data.tableConfig.requestData.data = requestData
-            tableLoadData(data.tableConfig.requestData.data);
+            tableLoadData(data.tableConfig.requestData);
         }
 
         onBeforeMount(() => {

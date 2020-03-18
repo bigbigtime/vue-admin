@@ -123,7 +123,6 @@ export default {
         });
 
         const search = () => {
-
             let requesttData = {
                 [data.selectData.value] : data.key_word
             }
@@ -206,6 +205,8 @@ export default {
                 data.updateUserStatusFlag = !data.updateUserStatusFlag
             })
         }
+
+        onMounted(() => {})
 
         return {
             data,

@@ -20,7 +20,7 @@
                 <el-radio v-model="data.form.status" label="1">禁用</el-radio>
                 <el-radio v-model="data.form.status" label="2">启用</el-radio>
             </el-form-item>
-            <el-form-item label="角色：" :label-width="data.formLabelWidth" prop="role">
+            <el-form-item label="系统：" :label-width="data.formLabelWidth" prop="role">
                 <el-checkbox-group v-model="data.form.role">
                     <el-checkbox v-for="item in data.roleItem" :key="item.role" :label="item.role">{{ item.name }}</el-checkbox>
                 </el-checkbox-group>
@@ -34,7 +34,7 @@
 </template>
 <script>
 import sha1 from 'js-sha1';
-import { GetRole, UserAdd, UserEdit} from "@/api/user";
+import { GetSystem, UserAdd, UserEdit} from "@/api/user";
 import { reactive, ref, watch, onBeforeMount } from '@vue/composition-api';
 // 过滤
 import { stripscript, validatePass, validateEmail } from '@/utils/validate';
@@ -136,8 +136,8 @@ export default {
         /**
          * 请求角色
          */
-        const getRole = () => {
-            GetRole().then(response => {
+        const getSystem = () => {
+            GetSystem().then(response => {
                 data.roleItem = response.data.data
             })
         }
@@ -146,7 +146,7 @@ export default {
          */
         const openDialog = () => {
             // 角色请求
-            getRole()
+            getSystem()
             // 初始值处理
             let editData = props.editData;
             if(editData.id) { // 编辑

@@ -17,7 +17,29 @@ router.beforeEach((to, from, next) => {
         }else{
             // 获取用户的色
             // 动态分配路由权限
-            next();
+            /**
+             * 1、什么时候处理动态路由
+             * 2、以什么条件处理
+             * roles[]
+             */
+            if(store.getters['permission/roles'].length === 0) {
+                store.dispatch('permission/getRoles').then(response => {
+                    let role = response;
+                    store.dispatch('permission/createRouter', role).then(response => {
+                        let addRouters = store.getters['permission/addRouters'];
+                        let allRouters = store.getters['permission/allRouters'];
+                        // 路由更新
+                        router.options.routes = allRouters;
+                        // 添加动态路由
+                        router.addRoutes(addRouters)
+                        next({ ...to, replace: true});
+                        // es6扩展运算符，防止内容发生变化的情况
+                        // 不被记录历史记录
+                    })
+                });
+            }else{
+                next();
+            }
         }
         /**
          * 1、to = /console

@@ -1,6 +1,6 @@
 import service from "@/utils/request";
 /**
- * 列表
+ * 角色列表
  */
 export function GetRole(data = {}){
     return service.request({
@@ -9,6 +9,18 @@ export function GetRole(data = {}){
         data
     })
 }
+
+/**
+ * 系统列表
+ */
+export function GetSystem(data = {}){
+    return service.request({
+        method: "post",
+        url: "/system/",
+        data
+    })
+}
+
 
 /**
  * 列表
@@ -43,7 +55,6 @@ export function UserActives(data){
     })
 }
 
-
 /**
  * 用户编辑
  */
@@ -54,3 +65,4 @@ export function UserEdit(data){
         data
     })
 }
+
