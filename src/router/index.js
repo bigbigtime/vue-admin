@@ -5,8 +5,15 @@ Vue.use(Router);
 /**
  * 1、系统分配
  * 2、角色分配
+ * 3、按钮级别分配
+ *
+ * 工作：路由是前台配，还是后台配的问题？
  * 
- * 工作，动态路由到底是由后台返回出来，还是由前端
+ * 个人建议，前端配置，这样才能达到前后端分离的工作；
+ * 
+ * 1、后台配置路由，前端人不在的情况；没办法页面跳转；
+ * 2、新的需求，前端把路由配好了，后台的人不在，没办法找到路由；
+ * 
  */
 
 /**
@@ -67,12 +74,14 @@ export default new Router({
 
 /**
  * 动态路由
+ * 角色：sale, technician, manager
  */
 export const asnycRouterMap = [
   {
     path: "/info",
     name: "Info",
     meta: {
+      role: ['sale', 'manager'],
       system: 'infoSystem',
       name: "信息管理",
       icon: 'info'
@@ -83,6 +92,7 @@ export const asnycRouterMap = [
         path: "/infoIndex",
         name: "InfoIndex",
         meta: {
+          role: ['sale', 'manager'],
           name: "信息列表"
         },
         component: () => import("../views/Info/index.vue")
@@ -91,6 +101,7 @@ export const asnycRouterMap = [
         path: "/infoCategory",
         name: "InfoCategory",
         meta: {
+          role: ['sale'],
           name: "信息分类"
         },
         component: () => import("../views/Info/category.vue")
@@ -100,6 +111,7 @@ export const asnycRouterMap = [
         name: "InfoDetailed",
         hidden: true,
         meta: {
+          role: ['sale'],
           name: "信息详情"
         },
         component: () => import("../views/Info/detailed.vue")
@@ -113,6 +125,7 @@ export const asnycRouterMap = [
     path: "/user",
     name: "User",
     meta: {
+      role: ['sale'],
       system: 'userSystem', // 自定义key
       name: "用户管理",
       icon: 'user'
@@ -123,6 +136,7 @@ export const asnycRouterMap = [
         path: "/userIndex",
         name: "UserIndex",
         meta: {
+          role: ['sale'],
           name: "用户列表"
         },
         component: () => import("../views/User/index.vue")

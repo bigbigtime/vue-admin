@@ -1,6 +1,7 @@
 import { MessageBox } from 'element-ui';
 export default {
   install (Vue, options) {
+    // 注册全避方法
     Vue.prototype.confirm = (params) => {
         MessageBox.confirm(params.content,  params.tip || "提示", {
                 confirmButtonText: "确定",
