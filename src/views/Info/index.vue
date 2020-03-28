@@ -50,7 +50,7 @@
             </el-col>
             <el-col :span="3">&nbsp;</el-col>
             <el-col :span="2">
-                <el-button type="danger" class="pull-right" style="width: 100%;" @click="dialog_info = true">新增</el-button>
+                <el-button type="danger" class="pull-right" style="width: 100%;" @click="dialog_info = true"  v-if="btnPerm('info:add')">新增</el-button>
             </el-col>
         </el-row>
         <!-- 表格数据 -->
@@ -63,9 +63,10 @@
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)">删除</el-button>
-                    <el-button type="success" size="mini" @click="editInfo(scope.row.id)">编辑</el-button>
-                    <el-button type="success" size="mini" @click="detailed(scope.row)">编辑详情</el-button>
+                    <el-button type="danger" size="mini" v-btnPerm="'info:del'" class="hiden-button">自定义指令测试</el-button>
+                    <el-button type="danger" size="mini" @click="deleteItem(scope.row.id)" v-btnPerm="'info:del'" class="hiden-button">删除</el-button>
+                    <el-button type="success" size="mini" @click="editInfo(scope.row.id)" v-btnPerm="'info:edit'" class="hiden-button">编辑</el-button>
+                    <el-button type="success" size="mini" @click="detailed(scope.row)" v-btnPerm="'info:detailed'" class="hiden-button">编辑详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -88,7 +89,6 @@
                 </el-pagination>
             </el-col>
         </el-row>
-        
         <!--新增弹窗-->
         <DialogInfo :flag.sync="dialog_info" :category="options.category" />
         <!--修必弹窗-->
@@ -309,4 +309,8 @@ export default {
     &.date { @include labelDom(right, 93, 40); }
     &.key-work { @include labelDom(right, 99, 40); }
 }
+</style>
+<style>
+button.hiden-button { display: none; }
+button.show-button { display: inline-block; }
 </style>

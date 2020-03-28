@@ -1,4 +1,4 @@
 const requestUrl = {
-    getUserList: "/news/getList/"
+    getUserList: "/user/getList/"
 }
 export { requestUrl }

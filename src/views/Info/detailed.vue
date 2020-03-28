@@ -31,7 +31,7 @@
 <script>
 import { GetList, EdidInfo } from "@/api/news";
 import { timestampToTime } from "@/utils/common";
-import { reactive, ref, watch, onMounted } from '@vue/composition-api';
+import { reactive, ref, watch, onMounted, onActivated } from '@vue/composition-api';
 // 组件
 import UploadImg from "@c/UploadImg"
 // 富文本编辑器
@@ -120,12 +120,15 @@ export default {
       })
     }
 
-    
-
     onMounted(() => {
       getInfoCategory()
+    })
+
+    onActivated(() => {
+      data.id = root.$route.params.id || root.$store.getters["infoDetailed/infoId"];
       getInfo()
     })
+
 
     return {
       data, form, submit, uploadImgConfig
