@@ -11,6 +11,18 @@ export function GetRole(data = {}){
 }
 
 /**
+ * 按钮权限
+ */
+export function GetPermButton(data = {}){
+    return service.request({
+        method: "post",
+        url: "/permButton/",
+        data
+    })
+}
+
+
+/**
  * 系统列表
  */
 export function GetSystem(data = {}){

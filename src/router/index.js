@@ -60,6 +60,7 @@ export const defaultRouterMap = [
         path: "/index",
         name: "Index",
         meta: {
+          keepAlive: true,
           name: "首页"
         },
         component: () => import("../views/Console/index.vue")
@@ -69,6 +70,8 @@ export const defaultRouterMap = [
 ]
 
 export default new Router({
+  mode: 'hash',
+  scrollBehavior: () => ({ y: 0 }),
   routes: defaultRouterMap
 });
 
@@ -92,6 +95,7 @@ export const asnycRouterMap = [
         path: "/infoIndex",
         name: "InfoIndex",
         meta: {
+          keepAlive: true,
           role: ['sale', 'manager'],
           name: "信息列表"
         },
@@ -101,6 +105,7 @@ export const asnycRouterMap = [
         path: "/infoCategory",
         name: "InfoCategory",
         meta: {
+          keepAlive: true,
           role: ['sale'],
           name: "信息分类"
         },
@@ -111,6 +116,7 @@ export const asnycRouterMap = [
         name: "InfoDetailed",
         hidden: true,
         meta: {
+          keepAlive: true,
           role: ['sale'],
           name: "信息详情"
         },
@@ -136,6 +142,7 @@ export const asnycRouterMap = [
         path: "/userIndex",
         name: "UserIndex",
         meta: {
+          keepAlive: true,
           role: ['sale'],
           name: "用户列表"
         },

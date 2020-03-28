@@ -25,6 +25,18 @@
                     <el-checkbox v-for="item in data.roleItem" :key="item.role" :label="item.role">{{ item.name }}</el-checkbox>
                 </el-checkbox-group>
             </el-form-item>
+            <el-form-item label="按钮：" :label-width="data.formLabelWidth">
+                <template v-if="data.btnPerm.length > 0">
+                    <div v-for="item in data.btnPerm">
+                        <h4>{{ item.name }}</h4>
+                        <template v-if="item.perm && item.perm.length > 0">
+                            <el-checkbox-group v-model="data.form.btnPerm">
+                                <el-checkbox v-for="buttons in item.perm" :key="buttons.value" :label="buttons.value">{{ buttons.name }}</el-checkbox>
+                            </el-checkbox-group>
+                        </template>
+                    </div>
+                </template>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="close">取消</el-button>
@@ -34,7 +46,7 @@
 </template>
 <script>
 import sha1 from 'js-sha1';
-import { GetRole, GetSystem, UserAdd, UserEdit} from "@/api/user";
+import { GetRole, GetSystem, GetPermButton, UserAdd, UserEdit} from "@/api/user";
 import { reactive, ref, watch, onBeforeMount } from '@vue/composition-api';
 // 过滤
 import { stripscript, validatePass, validateEmail } from '@/utils/validate';
@@ -108,8 +120,10 @@ export default {
                 phone: "",
                 region: "",
                 status: "2",
-                role: []
+                role: [],
+                btnPerm: []
             },
+            
             rules: reactive({
                 username: [
                     { validator: validateUsername, trigger: 'blur' }
@@ -123,6 +137,8 @@ export default {
             }),
             // 角色选择
             roleItem: [],
+            // 按钮权限
+            btnPerm: [],
             // 按钮加载
             submitLoading: false
         });
@@ -137,9 +153,17 @@ export default {
          * 请求角色
          */
         const getRole = () => {
-            GetRole().then(response => {
-                data.roleItem = response.data.data
-            })
+            // if(data.roleItem.length > 0 && data.btnPerm.length > 0) { return false }
+            if(data.roleItem.length === 0) {
+                GetRole().then(response => {
+                    data.roleItem = response.data.data
+                })
+            }
+            if(data.btnPerm.length === 0) {
+                GetPermButton().then(response => {
+                    data.btnPerm = response.data.data
+                })
+            }
         }
         /**
          * 弹窗打开，动画结束时
@@ -150,13 +174,14 @@ export default {
             // 初始值处理
             let editData = props.editData;
             if(editData.id) { // 编辑
-                editData.role = editData.role.split(','); // 数组
+                editData.role = editData.role ? editData.role.split(',') : []; // 数组
+                editData.btnPerm = editData.btnPerm ? editData.btnPerm.split(',') : []; // 数组
+                // 循环JSON对象
+                for(let key in editData) {
+                    data.form[key] = editData[key]
+                }
             }else{ // 添加
                 data.form.id && delete data.form.id
-            }
-            // 循环JSON对象
-            for(let key in editData) {
-                data.form[key] = editData.id ? editData[key] : ""
             }
         }
         
@@ -181,6 +206,7 @@ export default {
                     // 数据处理
                     let requestData = Object.assign({}, data.form); //
                     requestData.role = requestData.role.join();  // 数组转字符串，默认以，号隔开
+                    requestData.btnPerm = requestData.btnPerm.join();  // 数组转字符串，默认以，号隔开
                     requestData.region = JSON.stringify(data.cityPickerData);
                     // 添加状态：需要密码，并且加密码
                     // 编辑状态：值存在，需要密码，并且加密码；否删除

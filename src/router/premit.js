@@ -25,9 +25,10 @@ router.beforeEach((to, from, next) => {
             if(store.getters['app/roles'].length === 0) {
                 store.dispatch('permission/getRoles').then(response => {
                     let role = response.role;
-                    let button = response.button;
+                    let button = response.button; // 这是上学时说的内容
+                    let btnPerm = response.btnPerm;
                     store.commit("app/SET_ROLES", role);
-                    store.commit("app/SET_BUTTON", button);
+                    store.commit("app/SET_BUTTON", btnPerm);
                     // 存储角色 
                     store.dispatch('permission/createRouter', role).then(response => {
                         let addRouters = store.getters['permission/addRouters'];
@@ -62,4 +63,4 @@ router.beforeEach((to, from, next) => {
          * 3、白名单判断存在，则直接执行next()，因为没有参数，所以不会再次beforeEach。
          */
     }
-  })
+})

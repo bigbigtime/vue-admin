@@ -19,7 +19,6 @@ export function common(){
      */
     const getInfoCategoryAll = () => {
         GetCategoryAll({}).then(response => {
-            console.log(response)
             categoryItem.item = response.data.data
         }).catch(error => {})
     }

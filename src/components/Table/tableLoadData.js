@@ -16,7 +16,6 @@ export function loadData(){
             method: requestJson.method,
             data: requestJson.data
         }
-        console.log(requestData)
         loadTableData(requestData).then(response => {
             let responseData = response.data.data.data;
             // 后台返回数据时，并不是返回一个数组，有时返回一个null，统一返回的是数组，无论是否空 array
