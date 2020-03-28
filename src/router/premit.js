@@ -17,7 +17,34 @@ router.beforeEach((to, from, next) => {
         }else{
             // 获取用户的色
             // 动态分配路由权限
-            next();
+            /**
+             * 1、什么时候处理动态路由
+             * 2、以什么条件处理
+             * roles[]
+             */
+            if(store.getters['app/roles'].length === 0) {
+                store.dispatch('permission/getRoles').then(response => {
+                    let role = response.role;
+                    let button = response.button; // 这是上学时说的内容
+                    let btnPerm = response.btnPerm;
+                    store.commit("app/SET_ROLES", role);
+                    store.commit("app/SET_BUTTON", btnPerm);
+                    // 存储角色 
+                    store.dispatch('permission/createRouter', role).then(response => {
+                        let addRouters = store.getters['permission/addRouters'];
+                        let allRouters = store.getters['permission/allRouters'];
+                        // 路由更新
+                        router.options.routes = allRouters;
+                        // 添加动态路由
+                        router.addRoutes(addRouters)
+                        next({ ...to, replace: true});
+                        // es6扩展运算符，防止内容发生变化的情况
+                        // 不被记录历史记录
+                    })
+                });
+            }else{
+                next();
+            }
         }
         /**
          * 1、to = /console
@@ -36,4 +63,4 @@ router.beforeEach((to, from, next) => {
          * 3、白名单判断存在，则直接执行next()，因为没有参数，所以不会再次beforeEach。
          */
     }
-  })
+})

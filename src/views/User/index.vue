@@ -7,61 +7,84 @@
                     <div class="warp-content">
                         <el-row :gutter="16">
                             <el-col :span="3">
-                                <SelectVue :config="data.configOption" />
+                                <SelectVue :config="data.configOption" :selectData.sync="data.selectData" />
                             </el-col>
                             <el-col :span="5">
-                                <el-input placeholder="请输入搜索的关键字"></el-input>
+                                <el-input v-model="data.key_word" placeholder="请输入搜索的关键字"></el-input>
                             </el-col>
                             <el-col :span="15">
-                                <el-button type="danger">搜索</el-button>
+                                <el-button type="danger" @click="search">搜索</el-button>
                             </el-col>
                         </el-row>
                     </div>
                 </div>
             </el-col>
             <el-col :span="4">
-                <el-button type="danger" class="pull-right">添加用户</el-button>
+                <el-button type="danger" class="pull-right" @click="handlerAdd">添加用户</el-button>
             </el-col>
         </el-row>
         <div class="black-space-30"></div>
-        <TableVue :config="data.configTable">
+        <TableVue ref="userTable" :config="data.configTable" :tableRow.sync="data.tableRow">
+            <!--插槽-->
             <template v-slot:status="slotData">
-                <el-switch v-model="slotData.data.name" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                <el-switch @change="handlerSwitch(slotData.data)" v-model="slotData.data.status" active-value="2"  inactive-value="1" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
             </template>
             <template v-slot:operation="slotData">
-                <el-button size="small" type="danger" @click="operation(slotData.data)">删除</el-button>
-                <el-button size="small" type="success" @click="operation(slotData.data)">编辑</el-button>
+                <el-button size="small" type="danger" @click="handlerDel(slotData.data)">删除</el-button>
+                <el-button size="small" type="success" @click="handlerEdit(slotData.data)">编辑</el-button>
             </template>
+            <template v-slot:tableFooterLeft>
+                <el-button size="small" @click="handlerBatchDel()">批量删除</el-button>
+            </template>
+            <!--插槽-->
         </TableVue>
+        <!--子组件-->
+        <DialogAdd :flag.sync="data.dialog_add" :editData="data.editData" @refreshTabelData="refreshData" />
     </div>
 </template>
 <script>
-import { reactive, ref, watch, onMounted } from '@vue/composition-api';
+import { reactive, ref, watch, onMounted, provide } from '@vue/composition-api';
+import { UserDel, UserActives } from "@/api/user";
 // 组件
 import SelectVue from "@c/Select";
 import TableVue from "@c/Table";
+import DialogAdd from "./dialog/add";
+// 3.0抽离的方法
+import { global } from "@/utils/global_V3.0";
 export default {
     name: 'userIndex',
-    components: { SelectVue, TableVue },
-    setup(props) {
+    components: { SelectVue, TableVue, DialogAdd },
+    setup(props, { root, refs }) {
+        const { confirm } = global();
+        const userTable = ref(null);
         const data = reactive({
+            // table选择的数据
+            tableRow: {},
+            cityPickerData: {},
+            dialog_add: false,
+            dialog_edit: false,
+            editData: {},
             configOption: {
                 init: ["name", "phone"]
             },
+            // 下接菜单的数据
+            selectData: {},
+            // 搜索关键字
+            key_word: "",
+            // 阻止状态
+            updateUserStatusFlag: false,
             // table组件配置参数
             configTable: {
-                // 多选框
-                selection: false,
                 // 表头
                 tHead: [
                     { 
                         label: "邮箱/用户名",
-                        field: "title",
+                        field: "username",
                         width: 200
                     },
                     { 
                         label: "真实姓名",
-                        field: "name",
+                        field: "truename",
                         width: 120
                     },
                     { 
@@ -70,7 +93,7 @@ export default {
                     },
                     { 
                         label: "地区",
-                        field: "address"
+                        field: "region"
                     },
                     { 
                         label: "角色",
@@ -99,16 +122,96 @@ export default {
             }
         });
 
+        const search = () => {
+            let requesttData = {
+                [data.selectData.value] : data.key_word
+            }
+            refs.userTable.paramsLoadData(requesttData);
+        }
+
+        const handlerBatchDel = () => {
+            let userId = data.tableRow.idItem
+            if(!userId || userId.length === 0) {
+                root.$message({
+                    message: "请勾选需要删除的用户！！",
+                    type: "error"
+                })
+                return false;
+            }
+            confirm({
+                content: "确认删除当前信息，确认后将无法恢复！！",
+                tip: "警告",
+                fn: userDelete
+            })
+            
+        }
+        // 删除用户
+        const userDelete = () => {
+            UserDel({ id: data.tableRow.idItem }).then(response => {
+                // 其中一种写法
+                // refs.userTable.refreshData()
+                // 第二种写法
+                refreshData()
+            })
+        }
+
+        const refreshData = () => {
+            userTable.value.refreshData()
+        }
+
         /**
          * methods
          */
-        let operation = (params) => {
-            console.log(params);
+        const handlerDel = (params) => {
+            data.tableRow.idItem = [params.id]
+            confirm({
+                content: "确认删除当前信息，确认后将无法恢复！！",
+                tip: "警告",
+                fn: userDelete
+            })
         }
 
+        /**
+         * 添加用户
+         */
+        const handlerAdd = () => {
+            data.dialog_add = true;
+            // 子组件赋值
+            data.editData = Object.assign({});
+        }
+
+        /**
+         * 编辑
+         */
+        const handlerEdit = (params) => {
+            data.dialog_add = true;
+            // 子组件赋值
+            data.editData = Object.assign({}, params);
+        }
+
+        /**
+         * 修改用户状态
+         */
+        const handlerSwitch = (params) => {
+            if(data.updateUserStatusFlag) { return false }
+            data.updateUserStatusFlag = true
+            UserActives({ id: params.id, status: params.status }).then(response => {
+                root.$message({
+                    message: response.data.message,
+                    type: "success"
+                })
+                data.updateUserStatusFlag = !data.updateUserStatusFlag
+            }).catch(error => {
+                data.updateUserStatusFlag = !data.updateUserStatusFlag
+            })
+        }
+
+        onMounted(() => {})
+
         return {
-            data, 
-            operation
+            data,
+            handlerDel,
+            handlerBatchDel, userTable, refreshData, handlerSwitch, handlerEdit, handlerAdd, search
         }
     }
 }
