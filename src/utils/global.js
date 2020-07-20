@@ -19,4 +19,15 @@ export default {
         }
     }
 }
+// exports.install = function(Vue, options) {
+//     Vue.prototype.$back = function() { //全局函数1
+//         xxx
+//     };
+//     Vue.prototype.$pushH = function() { //全局函数2
+//         xxx
+//     };
+//     Vue.prototype.$pushHN = function() { //全局函数3
+//         xxx
+//     };
+// };
 // vue插件

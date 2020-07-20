@@ -22,7 +22,7 @@ export default {
             selectValue: "",
             initOption: [],
             option: [
-                { value: "name", label: "姓名" },
+                { value: "truename", label: "姓名" },
                 { value: "phone", label: "手机号" },
                 { value: "email", label: "邮箱" },
                 { value: "id", label: "ID" },
@@ -56,6 +56,8 @@ export default {
             data.initOption = optionArr;
             // 初始化搜索类型
             data.selectValue = optionArr[0].value;
+            // 返回初始值
+            emit("update:selectData", optionArr[0]);
         }
 
         /**

@@ -110,8 +110,10 @@ export default {
                     type: 'success'
                 })
                 data.submitLoading = false
-                // 重置表单
-                resetForm()
+                // 关闭弹窗
+                close()
+                // 回调父级数据
+                emit('getListEmit');
                 // root.$refs['addInfoForm'].resetFields();
             }).catch(error => {
                 data.submitLoading = false

@@ -46,7 +46,7 @@
 import sha1 from 'js-sha1';
 import { Message } from 'element-ui';
 import { GetSms, Register, Login } from "@/api/login";
-import { reactive, ref, isRef, toRefs, onMounted, watch } from '@vue/composition-api';
+import { reactive, ref, isRef, toRefs, onMounted, watch, onUnmounted } from '@vue/composition-api';
 import { stripscript, validatePass, validateEmail, validateVCode } from '@/utils/validate';
 export default {
     name: 'login',
@@ -216,6 +216,12 @@ export default {
           // 调定时器，倒计时
           countDown(60);
         }).catch(error => {
+          // 启用登录或注册按钮
+          loginButtonStatus.value = false;
+          updataButtonStatus({
+            status: false,
+            text: '再次获取'
+          })
           console.log(error);
         })
       })
@@ -316,6 +322,13 @@ export default {
       // 挂载完成后
       onMounted(() => {
         
+      })
+
+      /**
+       * 销毁页面时
+       */
+      onUnmounted(() => {
+        clearInterval(timer.value);
       })
 
       return {

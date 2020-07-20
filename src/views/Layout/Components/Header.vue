@@ -6,7 +6,7 @@
                 <img src="../../../assets/images/face.jpg" alt="">
                 {{ username }}
             </div>
-            <div class="header-icon pull-left" @click="exit">
+            <div class="header-icon pull-left" @click="logout">
                 <svg-icon iconClass="exit" className="exit" />
             </div>
         </div>
@@ -22,17 +22,23 @@ export default {
             root.$store.commit('app/SET_COLLAPSE')
         }
         // 退出
-        const exit = () => {
-            root.$store.dispatch('app/exit').then(() => {
-                root.$router.push({
-                    name: 'Login'
-                })
+        const logout = () => {
+            root.$store.dispatch('app/logout').then(response => {
+                if(response.resCode === 0) {
+                    root.$message({
+                        message: "退出成功！",
+                        type: "success"
+                    })
+                    root.$router.push({
+                        name: 'Login'
+                    })
+                }
             })
         }
         return {
             navMenuState,
             username,
-            exit
+            logout
         }
     }
 }

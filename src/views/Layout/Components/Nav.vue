@@ -2,7 +2,7 @@
     <div id="nav-wrap">
         <h1 class="logo"><img src="../../../assets/logo.png" alt=""></h1>
         <el-menu 
-          default-active="1-4-1" 
+          :default-active="defalutActive" 
           class="el-menu-vertical-demo" 
           :collapse="isCollapse" 
           background-color="transparent" 
@@ -22,7 +22,6 @@
                   {{ subItem.meta.name }}
                 </el-menu-item>
               </template>
-              
             </el-submenu>
           </template>
         </el-menu>
@@ -40,12 +39,21 @@ export default {
        */
       const routers = reactive(root.$router.options.routes);
       /**
+       * 监听路由变化
+       */
+      const defalutActive = computed(() => {
+        const route = root.$route;
+        const { path } = route;
+        return path;
+      })
+      /**
        * computed 监听
        */
       const isCollapse = computed(() => root.$store.state.app.isCollapse);
       return {
         isCollapse,
-        routers
+        routers,
+        defalutActive
       }
     }
 }

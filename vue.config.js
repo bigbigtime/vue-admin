@@ -1,7 +1,7 @@
 const path = require('path');
 module.exports = {
   // 基本路径
-  publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '' : './',
   // 输出文件目录
   outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist',
   // eslint-loader 是否在保存的时候检查
@@ -64,19 +64,13 @@ module.exports = {
     hot: true, // 开启热加载
     hotOnly: false,
     proxy: {
-      '/devApi': {
-          target: "http://www.web-jshtml.cn/productapi/token", //API服务器的地址  http://www.web-jshtml.cn/api
+      "/devApi": {
+          target: "http://www.web-jshtml.cn/productapi/token", //API服务器的地址
           changeOrigin: true,
           pathRewrite: {
-              '^/devApi': ''
+              "^/devApi": ''
           }
       }
-    },
-    overlay: { // 全屏模式下是否显示脚本错误
-      warnings: true,
-      errors: true
-    },
-    before: app => {
     }
   },
   /**

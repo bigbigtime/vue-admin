@@ -63,7 +63,26 @@ export const defaultRouterMap = [
           keepAlive: true,
           name: "首页"
         },
-        component: () => import("../views/Console/index.vue")
+        component: resolve=>(require(["@/views/Console/index.vue"],resolve))
+      }
+    ]
+  },
+  // 404页面
+  {
+    path: "/page404",
+    meta: {
+      name: "404",
+      icon: '404'
+    },
+    hidden: true,
+    component: Layout,
+    children: [
+      {
+        path: "/404",
+        meta: {
+          name: "404"
+        },
+        component: () => import("../views/404.vue")
       }
     ]
   }
@@ -149,5 +168,6 @@ export const asnycRouterMap = [
         component: () => import("../views/User/index.vue")
       }
     ]
-  }
+  },
+  { path: "*", redirect: "/404", hidden: true }
 ]

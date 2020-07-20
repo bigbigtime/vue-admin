@@ -6,7 +6,7 @@ import { getToKen, getUserName } from "@/utils/app";
 // 创建axios，赋给变量service
 // 手把手撸码前端API，地址 http://www.web-jshtml.cn/productApi
 
-const BASEURL = process.env.NODE_ENV === 'production' ? '' : '/devApi';
+const BASEURL = process.env.NODE_ENV === 'production' ? process.env.VUE_APP_API : process.env.VUE_APP_API;
 const service = axios.create({
     baseURL: BASEURL,  // http://192.168.0.106:8080/devApi/  == http://www.web-jshtml.cn/productapi/productapi
     timeout: 15000,   // 超时
@@ -28,7 +28,6 @@ service.interceptors.request.use(function (config) {
     // 最终目地不是在请求头添加参数
     config.headers['Tokey'] = getToKen()
     config.headers['UserName'] = getUserName()
-
     return config;
 }, function (error) {
 // 对请求错误做些什么
@@ -43,7 +42,6 @@ service.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     let data = response.data
     // 业务需求
-
     if(data.resCode !== 0) {
         Message.error(data.message);
         return Promise.reject(data);

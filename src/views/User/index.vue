@@ -65,7 +65,7 @@ export default {
             dialog_edit: false,
             editData: {},
             configOption: {
-                init: ["name", "phone"]
+                init: ["truename", "phone"]
             },
             // 下接菜单的数据
             selectData: {},
@@ -123,6 +123,7 @@ export default {
         });
 
         const search = () => {
+            console.log(data.selectData.value)
             let requesttData = {
                 [data.selectData.value] : data.key_word
             }

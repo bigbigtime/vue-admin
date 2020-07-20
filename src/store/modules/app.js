@@ -1,4 +1,4 @@
-import { Login } from "@/api/login";
+import { Login, Logout } from "@/api/login";
 import { setToKen, removeToKen, removeUserName, setUserName, getUserName } from "@/utils/app";
 const state = {
     roles: [],
@@ -53,14 +53,18 @@ const actions = {  // 可以回调处理事情
             })
         })
     },
-    exit({ commit }){
+    logout({ commit }){
         return new Promise((resolve, reject) => {
-            removeToKen();
-            removeUserName();
-            commit('SET_TOKEN', '');
-            commit('SET_USERNAME', '');
-            commit('SET_ROLES', []);
-            resolve();
+            Logout().then(response => {
+                const data = response.data
+                removeToKen();
+                removeUserName();
+                commit('SET_TOKEN', '');
+                commit('SET_USERNAME', '');
+                commit('SET_ROLES', []);
+                resolve(data);
+            })
+            
         })
     }
 }

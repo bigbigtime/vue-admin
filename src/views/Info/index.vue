@@ -90,7 +90,7 @@
             </el-col>
         </el-row>
         <!--新增弹窗-->
-        <DialogInfo :flag.sync="dialog_info" :category="options.category" />
+        <DialogInfo :flag.sync="dialog_info" :category="options.category" @getListEmit="getList" />
         <!--修必弹窗-->
         <DialogEditInfo :flag.sync="dialog_info_edit" :id="infoId" :category="options.category" @getListEmit="getList" />
     </div>
@@ -100,7 +100,7 @@ import { GetCategory, GetList, DeleteInfo } from "@/api/news";
 import DialogInfo from "./dialog/info";
 import DialogEditInfo from "./dialog/edit";
 import { global } from "@/utils/global_V3.0";
-import { reactive, ref, watch, onMounted } from '@vue/composition-api';
+import { reactive, ref, watch, onMounted, onActivated } from '@vue/composition-api';
 import { timestampToTime } from "@/utils/common";
 // 组件
 import SelectVue from "@c/Select";
@@ -274,6 +274,7 @@ export default {
             // 调用一个函数，返回一个新的值，替换原始值
             let categoryId = row.categoryId;
             let categoryData = options.category.filter(item => item.id == categoryId)[0];
+            if(!categoryData) { return false; }
             return categoryData.category_name;
         }
 
@@ -281,6 +282,15 @@ export default {
             let id = val.map(item => item.id);
             deleteInfoId.value = id
         }
+
+
+        /**
+         * 阻塞、BUG导致整个业务流程不能进行，这个BUG，
+         * 
+         */
+
+
+        
         /**
          * 生命周期
          */
@@ -289,6 +299,10 @@ export default {
             getInfoCategory();
             // 获取列表
             getList();
+        })
+
+        onActivated(() => {
+
         })
 
         return {

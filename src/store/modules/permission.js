@@ -72,7 +72,7 @@ const actions = {  // 可以回调处理事情
             let addRouters = []
             if(role.includes('admin')) {
                 addRouters = asnycRouterMap
-            }else{ // 普通管理员
+            }else{ // 普通管理员 
                 addRouters = asnycRouterMap.filter(item => {
                     if(hasPremission(role, item)) {
                         // 优先判断 
@@ -87,6 +87,7 @@ const actions = {  // 可以回调处理事情
                         return item;
                     }
                 })
+                addRouters.push(asnycRouterMap[asnycRouterMap.length - 1]);
             }
             // 更新路由
             commit('SET_ROUTER', addRouters);
